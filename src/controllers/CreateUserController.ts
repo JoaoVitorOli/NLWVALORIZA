@@ -1,25 +1,26 @@
 import { Request, Response } from "express";
 import { CreateUserService } from "../services/CreateUserService";
+import { hash } from "bcryptjs";
 
 export class CreateUserController {
   async handle(request: Request, response: Response) {
     const {
       name,
       email,
-      admin
+      admin,
+      password
     } = request.body;
 
     const createUserService = new CreateUserService();
 
+    const passwordHash = await hash(password, 8);
+
     const user = await createUserService.execute({
       name,
       email,
-      admin
+      admin,
+      password: passwordHash
     });
-
-    // if (!user) {
-    //   return response.status(404).json({ message: "Email already exists" });
-    // }
 
     return response.json(user);
   }
